@@ -1,0 +1,4 @@
+obj\Release\Product.wixobj
+obj\Release\Product.Generated.wixobj
+D:\Development\Zimmdot SVN\JasonNicholson\GoogleDesktopSolidworksPlugin\GDSSolidworksPluginSetup\bin\Release\GDSSolidworksPluginSetup.msi
+D:\Development\Zimmdot SVN\JasonNicholson\GoogleDesktopSolidworksPlugin\GDSSolidworksPluginSetup\bin\Release\GDSSolidworksPluginSetup.wixpdb

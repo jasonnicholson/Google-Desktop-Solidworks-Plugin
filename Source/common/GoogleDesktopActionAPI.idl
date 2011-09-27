@@ -1,0 +1,121 @@
+// Copyright 2004-2005 Google Inc.
+// All Rights Reserved
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+// An action location names a specific place where an action might be rendered. 
+// ACTION_LOCATION_ALL is a wildcard and currently the only supported location.
+typedef GUID ACTION_LOCATION;
+
+// An action ID uniquely names an action
+typedef GUID ACTION_ID;
+
+cpp_quote("#define ACTION_LOCATION_ALL GUID_NULL")
+
+// Email reply action, as seen on cached email pages
+cpp_quote("class DECLSPEC_UUID(\"2C323906-4D96-44d8-9A25-7E5A459601C6\") ActionEmailReply;")
+cpp_quote("#define ACTION_EMAIL_REPLY (__uuidof(ActionEmailReply))")
+
+// Email reply-all action, as seen on cached email pages
+cpp_quote("class DECLSPEC_UUID(\"D41F2CA2-2F7E-4653-BA23-3343AEFA2E2A\") ActionEmailReplyToAll;")
+cpp_quote("#define ACTION_EMAIL_REPLY_TO_ALL (__uuidof(ActionEmailReplyToAll))")
+
+// Email forward action, as seen on cached email pages
+cpp_quote("class DECLSPEC_UUID(\"7DB2E753-BA6B-4cdf-8A83-14F46241E10F\") ActionEmailForward;")
+cpp_quote("#define ACTION_EMAIL_FORWARD (__uuidof(ActionEmailForward))")
+
+// Email compose action, as seen on cached email pages
+cpp_quote("class DECLSPEC_UUID(\"BDCD3254-5645-44d4-86D9-529B66BCC276\") ActionEmailCompose;")
+cpp_quote("#define ACTION_EMAIL_COMPOSE (__uuidof(ActionEmailCompose))")
+
+// Email view action, as seen on cached email pages
+cpp_quote("class DECLSPEC_UUID(\"B011456A-7642-4d16-8217-8F68342A0D03\") ActionEmailViewEmail;")
+cpp_quote("#define ACTION_EMAIL_VIEW_EMAIL (__uuidof(ActionEmailViewEmail))")
+
+// IM view action, as seen on IM thread page
+cpp_quote("class DECLSPEC_UUID(\"024C004B-D318-4621-B088-B3B0A64354B4\") ActionImChat;")
+cpp_quote("#define ACTION_IM_CHAT (__uuidof(ActionImChat))")
+
+// Open Search Result action
+cpp_quote("class DECLSPEC_UUID(\"{21B7E880-EEB5-4c3d-8E56-BFF2A6654E6E}\") ActionOpenSearchResult;")
+cpp_quote("#define ACTION_OPEN_SEARCH_RESULT (__uuidof(ActionOpenSearchResult))")
+
+
+// Enum for how an action is to be handled
+typedef enum {
+  ACTION_HANDLING_DEFAULT   = 0, 
+  ACTION_HANDLING_QUENCH    = 1,
+  ACTION_HANDLING_OVERRIDE  = 2
+} ActionHandling;
+
+[
+  object,
+  local,
+  uuid(E5A04D23-6921-4ef6-B19B-6C6AA89A46AA),
+  oleautomation
+]
+// Implemented by plugins wishing to implement custom actions
+interface IGoogleDesktopCustomAction: IUnknown {
+  // Invoked when an action is being rendered to query for the plugins
+  // interest in the action.
+  // @param action the GUID for the action queried
+  // @param location the GUID identifier for the location where the action
+  //      is being rendered.
+  // @param query_string the query string, if applicable and if allowed by 
+  //      the user's preferences.
+  // @note we will not implement a preference to quench this parameter in
+  //      this iteration, but will keep it in mind if privacy concerns
+  //      surface down the road.
+  // @param item an interface to the item being rendered,
+  //      most commonly a IGoogleDesktopNotifyEvent
+  // @param action_title if the action is handled, this string will
+  //      be displayed as the action title. On input this contains
+  //      the default title for the current language.
+  // @param action_cookie a short text string (Question: limitations?)
+  //      which will be handed back to the object if the action is
+  //      performed
+  // @param handling specifies whether and how the action should be handled.
+  // @return S_OK in all cases.
+  //      An error return may result in the removal of the plugin's registration
+  //      for this action, or until GDS is restarted.
+  HRESULT QueryInterest(
+      [in] ACTION_LOCATION location,
+      [in] ACTION_ID action,
+      [in] BSTR query_string,
+      [in] IUnknown *item,
+      [in, out] BSTR *action_title,
+      [out] BSTR *action_cookie,
+      [out] ActionHandling *handling);
+
+  // Invoked when an action needs to be performed
+  // @param action the identifier for the action to perform
+  // @param location the identifier for the location where the action
+  //      was rendered.
+  // @param query_string the query string, if applicable and if allowed by
+  //      the user's preferences.
+  // @param action_cookie the text string the plugin provided in 
+  //      from QueryInterest
+  // @param item an interface to the item who is rendered, most frequently
+  //      this is IGoogleDesktopNotifyEvent
+  //      May be NULL in cases where it's not feasible to pass back
+  //      the same instance as in QueryInterest.
+  HRESULT HandleAction(
+      [in] ACTION_LOCATION location,
+      [in] ACTION_ID action,
+      [in] BSTR query_string,
+      [in] IUnknown *item,
+      [in] BSTR action_cookie);
+};
+
+[
+    uuid(12BAE823-72C3-480b-81F3-CE07767B52D2)
+] 
+// We need this library statement for MIDL to generate a .tlb. If this 
+// doesn't get generated, then this file will always be rebuilt, which
+// dominoes into rebuilding every target that depends on it.
+library GoogleDesktopActionsAPILibrary
+{ 
+  // pull into .tlb
+  interface IUnknown;
+}

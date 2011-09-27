@@ -1,0 +1,113 @@
+﻿Build started 8/22/2011 12:51:42 AM.
+     1>Project "C:\Users\Chris\Downloads\api\samples\search\common\GoogleDesktopComponentCommon.vcxproj" on node 3 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Release\GoogleDesktopComponentCommon.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       Midl:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\midl.exe /W1 /nologo /char signed /env win32 /h "GoogleDesktopActionAPI.h" /tlb "Release\GoogleDesktopComponentCommon.tlb" GoogleDesktopActionAPI.idl 
+         Processing .\GoogleDesktopActionAPI.idl
+         GoogleDesktopActionAPI.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\oaidl.idl
+         oaidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\objidl.idl
+         objidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\unknwn.idl
+         unknwn.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\wtypes.idl
+         wtypes.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\basetsd.h
+         basetsd.h
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\guiddef.h
+         guiddef.h
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\ocidl.idl
+         ocidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\oleidl.idl
+         oleidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\servprov.idl
+         servprov.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\urlmon.idl
+         urlmon.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\msxml.idl
+         msxml.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\oaidl.acf
+         oaidl.acf
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\ocidl.acf
+         ocidl.acf
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\midl.exe /W1 /nologo /char signed /env win32 /h "GoogleDesktopAPI.h" /notlb GoogleDesktopAPI.idl 
+         Processing .\GoogleDesktopAPI.idl
+         GoogleDesktopAPI.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\oaidl.idl
+         oaidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\objidl.idl
+         objidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\unknwn.idl
+         unknwn.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\wtypes.idl
+         wtypes.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\basetsd.h
+         basetsd.h
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\guiddef.h
+         guiddef.h
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\ocidl.idl
+         ocidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\oleidl.idl
+         oleidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\servprov.idl
+         servprov.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\urlmon.idl
+         urlmon.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\msxml.idl
+         msxml.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\oaidl.acf
+         oaidl.acf
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\ocidl.acf
+         ocidl.acf
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\midl.exe /W1 /nologo /char signed /env win32 /h "GoogleDesktopDisplayAPI_h.h" /tlb "Release\GoogleDesktopComponentCommon.tlb" GoogleDesktopDisplayAPI.idl 
+         Processing .\GoogleDesktopDisplayAPI.idl
+         GoogleDesktopDisplayAPI.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\wtypes.idl
+         wtypes.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\basetsd.h
+         basetsd.h
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\guiddef.h
+         guiddef.h
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\ocidl.idl
+         ocidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\oleidl.idl
+         oleidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\objidl.idl
+         objidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\unknwn.idl
+         unknwn.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\oaidl.idl
+         oaidl.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\servprov.idl
+         servprov.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\urlmon.idl
+         urlmon.idl
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\msxml.idl
+         msxml.idl
+     1>.\GoogleDesktopDisplayAPI.idl(1664): warning MIDL2015: failed to load tlb in importlib: : stdole.tlb
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\oaidl.acf
+         oaidl.acf
+         Processing C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include\ocidl.acf
+         ocidl.acf
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"StdAfx.h" /Fp"Release\GoogleDesktopComponentCommon.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Release\GoogleDesktopComponentCommon.pch" /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt GoogleDesktopComponentRegistration.cpp utils.cpp
+         GoogleDesktopComponentRegistration.cpp
+         utils.cpp
+         Generating Code...
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"Release\GoogleDesktopComponentCommon.lib" /NOLOGO Release\GoogleDesktopComponentRegistration.obj
+         Release\stdafx.obj
+         Release\utils.obj
+         GoogleDesktopComponentCommon.vcxproj -> C:\Users\Chris\Downloads\api\samples\search\common\Release\GoogleDesktopComponentCommon.lib
+       FinalizeBuildStatus:
+         Deleting file "Release\GoogleDesktopComponentCommon.unsuccessfulbuild".
+         Touching "Release\GoogleDesktopComponentCommon.lastbuildstate".
+     1>Done Building Project "C:\Users\Chris\Downloads\api\samples\search\common\GoogleDesktopComponentCommon.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.45

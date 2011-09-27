@@ -1,0 +1,16 @@
+HKCR
+{
+	NoRemove CLSID
+	{
+		ForceRemove {D214A637-77E7-4754-8C30-56EB8D4EE935} = s 'SolidworksCrawlPlugin Class'
+		{
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Both'
+			}
+			TypeLib = s '{42A6D99D-BAFD-4FA2-B0CF-51A014E8FB6D}'
+			Version = s '1.0'
+		}
+	}
+}

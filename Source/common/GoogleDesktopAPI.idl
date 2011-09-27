@@ -1,0 +1,1434 @@
+// Copyright 2004-2007 Google Inc. All Rights Reserved
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+cpp_quote("#include <winerror.h>")
+
+// Google Desktop API specific error codes
+
+// returned when a crawler component tries to register for an already handled extension
+cpp_quote("#define E_EXTENSION_REGISTERED           MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0001)")
+
+// specifies that the component must register before performing any operations
+cpp_quote("#define E_COMPONENT_NOT_REGISTERED       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0002)")
+
+// returned when a component tries to use an inexistent schema
+cpp_quote("#define E_NO_SUCH_SCHEMA                 MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0003)")
+
+// returned when a component tries to use an inexistent property
+cpp_quote("#define E_NO_SUCH_PROPERTY               MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0004)")
+
+// specifies that the component has been disabled by the user
+cpp_quote("#define E_COMPONENT_DISABLED             MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0005)")
+
+// specifies that the component is already registered
+cpp_quote("#define E_COMPONENT_ALREADY_REGISTERED   MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0006)")
+
+// specifies that indexing is paused and any sent events will be ignored
+cpp_quote("#define S_INDEXING_PAUSED                MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_ITF, 0x0007)")
+
+// specifies that the event was rejected because of data size limits
+cpp_quote("#define E_EVENT_TOO_LARGE                MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0008)")
+
+// specifies that Google Desktop is not running
+cpp_quote("#define E_SERVICE_NOT_RUNNING            MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0009)")
+
+// specifies that an event has invalid flags
+cpp_quote("#define E_INVALID_EVENT_FLAGS            MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x000A)")
+
+// specifies that the component is prohibited by the user's group policy
+cpp_quote("#define E_COMPONENT_PROHIBITED           MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x000B)")
+
+// specifies that the historical event sent could not be delivered immediately 
+// and a delay is recommended before sending again
+cpp_quote("#define E_SEND_DELAYED                   MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x000C)")
+
+// specifies that the provided property has been truncated due to size limits
+cpp_quote("#define S_PROPERTY_TRUNCATED             MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_ITF, 0x000D)")
+
+// specifies that the provided property is too large and cannot be accepted
+cpp_quote("#define E_PROPERTY_TOO_LARGE             MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x000E)")
+
+// returned when a property is not set
+cpp_quote("#define E_PROPERTY_NOT_SET               MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x000F)")
+
+// returned when the Google Destop system is exiting.
+cpp_quote("#define E_SERVICE_IS_EXITING             MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0010)")
+
+// returned when the application that made the call is exiting
+cpp_quote("#define E_APPLICATION_IS_EXITING         MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0011)")
+
+// specifies that the event could not be delivered and a re-send is required
+cpp_quote("#define E_RETRY_SEND                     MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0012)")
+
+// specifies that the event could not be delivered because required
+// resources were not available and the send operation timed out
+cpp_quote("#define E_SEND_TIMEOUT                   MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0013)")
+
+// specifies that the gadget registration was cancelled by the user
+cpp_quote("#define E_REGISTRATION_CANCELLED_BY_USER MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0014)")
+
+// specifies that the search has been locked by the user
+cpp_quote("#define E_SEARCH_LOCKED                  MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0015)")
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Event Framework filter names
+cpp_quote("#define GDEF_FILTER_SCHEMA       L\"GoogleDesktop.SchemaFilter\"")
+cpp_quote("#define GDEF_FILTER_PROPERTY     L\"GoogleDesktop.SchemaPropertyFilter\"")
+cpp_quote("#define GDEF_FILTER_COLLECTION   L\"GoogleDesktop.FilterCollection\"")
+cpp_quote("#define GDEF_FILTER_CONTEXTUAL   L\"GoogleDesktop.ContextualFilter\"")
+
+// Event Framework schema names
+cpp_quote("#define GD_SCHEMA_TEXTFILE       L\"Google.Desktop.TextFile\"")
+cpp_quote("#define GD_SCHEMA_IM             L\"Google.Desktop.IM\"")
+cpp_quote("#define GD_SCHEMA_EMAIL          L\"Google.Desktop.Email\"")
+cpp_quote("#define GD_SCHEMA_WEBPAGE        L\"Google.Desktop.WebPage\"")
+cpp_quote("#define GD_SCHEMA_MEDIAFILE      L\"Google.Desktop.MediaFile\"")
+cpp_quote("#define GD_SCHEMA_FILE           L\"Google.Desktop.File\"")
+cpp_quote("#define GD_SCHEMA_CONTACT        L\"Google.Desktop.Contact\"")
+cpp_quote("#define GD_SCHEMA_CALENDAR       L\"Google.Desktop.Calendar\"")
+cpp_quote("#define GD_SCHEMA_TASK           L\"Google.Desktop.Task\"")
+cpp_quote("#define GD_SCHEMA_NOTE           L\"Google.Desktop.Note\"")
+cpp_quote("#define GD_SCHEMA_JOURNAL        L\"Google.Desktop.Journal\"")
+cpp_quote("#define GD_SCHEMA_CONTEXT_FOREGROUND_CHANGE L\"Google.Desktop.Contextual.ForegroundChange\"")
+cpp_quote("#define GD_SCHEMA_CONTEXT_CONTEXT_UPDATE L\"Google.Desktop.Contextual.ContextUpdate\"")
+cpp_quote("#define GD_SCHEMA_CONTEXT_SYSTEM_CHANGE L\"Google.Desktop.Contextual.SystemChange\"")
+
+////////////////////////////////////////////////////////////////////////////////
+
+[uuid(91BC501D-4C7A-430c-BF2D-77441FAE8E65)]
+typedef enum GoogleDesktopDispId {
+  GD_DISPID_REGISTER_EXTENSION = 1001,
+  GD_DISPID_REGISTER_INDEXING_COMPONENT,
+  GD_DISPID_UNREGISTER_INDEXING_COMPONENT,
+  GD_DISPID_ADD_PROPERTY,
+  GD_DISPID_SEND,
+  GD_DISPID_SEND_EX,
+  GD_DISPID_GET_PROPERTY,
+  GD_DISPID_SCHEMA_NAME,
+  GD_DISPID_CREATE_EVENT,
+  GD_DISPID_SUBSCRIBE,
+  GD_DISPID_UNSUBSCRIBE,
+  GD_DISPID_ACTIVE,
+  GD_DISPID_FILTER_OPERATOR,
+  GD_DISPID_FILTER_NEGATE,
+  GD_DISPID_ADD_FILTER,
+  GD_DISPID_REMOVE_FILTER,
+  GD_DISPID_FIND_FILTER,
+  GD_DISPID_REMOVE_ALL_FILTERS,
+  GD_DISPID_ALLOW_NONE,
+  GD_DISPID_ALLOW,
+  GD_DISPID_DISALLOW,
+  GD_DISPID_GET_ALLOWED,
+  GD_DISPID_ADD_REQUIRED,
+  GD_DISPID_ADD_EXCLUDED,
+  GD_DISPID_REMOVE_REQUIRED,
+  GD_DISPID_REMOVE_EXCLUDED,
+  GD_DISPID_GET_REQUIRED,
+  GD_DISPID_GET_EXCLUDED,
+  GD_DISPID_MATCH_WHOLE_WORD,
+  GD_DISPID_START_COMPONENT_REGISTRATION,
+  GD_DISPID_GET_REGISTRATION_INTERFACE,
+  GD_DISPID_FINISH_COMPONENT_REGISTRATION,
+  GD_DISPID_UNREGISTER_COMPONENT,
+  GD_DISPID_REGISTER_INDEXING_PLUGIN,
+  GD_DISPID_REGISTER_ACTION,
+  GD_DISPID_REGISTER_DISPLAY_PLUGIN,
+  GD_DISPID_REGISTER_EVENT_PLUGIN,
+  GD_DISPID_REGISTER_QUERY_PLUGIN,
+
+  GD_DISPID_Q_GET_PROPERTY,
+  GD_DISPID_Q_NEXT,
+  GD_DISPID_Q_READY_STATE,
+  GD_DISPID_Q_COUNT,
+  GD_DISPID_Q_AVAILABLE_COUNT,
+  GD_DISPID_Q_SET_OPTION,
+  GD_DISPID_Q_GET_OPTION,
+  GD_DISPID_Q_QUERY_PROP,
+  GD_DISPID_Q_EXECUTE,
+  GD_DISPID_Q_QUERY,
+  GD_DISPID_Q_QUERY_EX,
+  GD_DISPID_Q_REMOVE_FROM_INDEX,
+  GD_DISPID_Q_ALLOW_MSG_WHILE_WAIT,
+  GD_DISPID_Q_CANCEL,
+  
+  GD_DISPID_ENABLE_CONTEXTUAL,
+  GD_DISPID_ENABLE_CONTEXTUAL_ONLY,
+  GD_DISPID_DISABLE_CONTEXTUAL,
+
+  GD_DISPID_GET_KEYWORDS,
+  GD_DISPID_Q_GET_KEYWORDS,
+  GD_DISPID_Q_GET_SNIPPET,
+  GD_DISPID_Q_QUERY_FOR_EVENT,
+  GD_DISPID_Q_ONKEYWORDSREADY,
+  GD_DISPID_Q_ONREADYSTATECHANGE,
+  GD_DISPID_Q_ONAVAILABLE,
+  GD_DISPID_Q_ONCOUNTCHANGE,
+  GD_DISPID_Q_PREPARE_RESULT_SET,
+  GD_DISPID_Q_OPEN,
+  GD_DISPID_Q_RESULT_SET_QUERY,
+
+  GD_DISPID_STATUS_GET_PROPERTY,
+  GD_DISPID_STATUS_SET_PROPERTY,
+
+  GD_DISPID_REGISTER_DISPLAY_EXTENSION,
+} GoogleDesktopDispId;
+
+
+[uuid(777A71D5-2154-4fb3-87EC-4817C201DF1A)]
+typedef enum GoogleDesktopSubscriptionFilterOperator {
+  GD_FILTER_OPERATOR_AND,
+  GD_FILTER_OPERATOR_OR,
+} GoogleDesktopSubscriptionFilterOperator;
+
+[
+  object,
+  uuid(9CBE5894-03B1-48c9-922A-CE5C886252F3),
+  dual,
+  oleautomation,
+  pointer_default(unique)
+]
+// An interface to effect registration for indexing plugins
+interface IGoogleDesktopRegisterIndexingPlugin : IDispatch { 
+  // @param extension_handled an extension on which this component 
+  //       wishes to receive notifications from the crawler. 
+  //       If no interest in handling extensions the parameter must be NULL
+  // @return S_OK on success
+  //         E_EXTENSION_REGISTERED in case the extension conflicts with an
+  //            existing registration. 
+  //         another appropriate error.
+  [id(GD_DISPID_REGISTER_INDEXING_PLUGIN)]
+  HRESULT RegisterIndexingPlugin(BSTR extension_handled);
+};
+
+[
+  object,
+  uuid(C3173C82-8B78-4f08-B19A-A65B7F48630A),
+  oleautomation
+]
+// An interface to effect registration for custom actions
+interface IGoogleDesktopRegisterCustomAction : IDispatch {
+  // @param action_class the progid or the CLSID of the object exposing the 
+  //    actions.
+  //    Note that this is different from the main component CLSID, which is
+  //    used for the purpose of identifying events generated by the
+  //    component, as well as for instantiating the plugin for the purpose
+  //    of notifying it of crawler events.
+  // @param action_id a string representation of a GUID, naming the action
+  //    we're registering for
+  // @param other_data reserved for future use, must be VT_EMPTY
+  [id(GD_DISPID_REGISTER_ACTION)]
+  HRESULT RegisterAction(
+      [in] BSTR action_class,
+      [in] BSTR action_id,
+      [in] VARIANT other_data);
+};
+
+[
+  object,
+  uuid(2c4f95b0-ee5b-4d93-98ed-bbd0c2913976),
+  oleautomation
+]
+// An interface to effect registration for display plugins
+interface IGoogleDesktopRegisterDisplayPlugin : IDispatch {
+  // @param plugin_class the progid or the CLSID of the object exposing the 
+  //    plugin.
+  // @param shows_notifications flag set to true if this plugin displays
+  //    notifications. This will list the plugin in the options dialog and
+  //    allow the user to enable/disable notifications for this plugin
+  [id(GD_DISPID_REGISTER_DISPLAY_PLUGIN)]
+  HRESULT RegisterPlugin(
+      [in] BSTR plugin_class,
+      [in] VARIANT_BOOL shows_notifications);
+};
+
+[
+  object,
+  uuid(918B59A2-B066-49d0-A45C-756859032AE3),
+  oleautomation
+]
+// An extension of the above interface for display plugins
+interface IGoogleDesktopRegisterDisplayPlugin2 : IGoogleDesktopRegisterDisplayPlugin {
+  // @param ext_class the progid or the CLSID of the object exposing the 
+  //    extension.
+  // @param host_clsids a VARIANT holding a SAFEARRAY of BSTRs, each BSTR identifying
+  //    the host plugin with which this extension works.
+  [id(GD_DISPID_REGISTER_DISPLAY_EXTENSION)]
+  HRESULT RegisterExtension(
+      [in] BSTR ext_class,
+      [in] VARIANT host_clsids);
+};
+
+[
+  object,
+  uuid(6f995c91-0763-4ad0-a209-0b4d8672284b),
+  oleautomation
+]
+// An interface to effect registration for event plugins
+interface IGoogleDesktopRegisterEventPlugin : IDispatch {
+  /**
+  * Registers a plugin with the event framework.
+  *
+  * @param plugin_class the progid or the CLSID of the object exposing the 
+  *   plugin.
+  * @param cookie [out] Upon successful return, will hold a cookie that must be
+  *   used in a call to @ref IGoogleDesktopEventPublisher::Subscribe.
+  * @return S_OK if the registration was successful, otherwise an error value.
+  */
+  [id(GD_DISPID_REGISTER_EVENT_PLUGIN)]
+  HRESULT RegisterPlugin(
+      [in] BSTR plugin_class,
+      [out, retval] long* cookie);
+};
+
+
+[
+  object,
+  uuid(4A2168E6-7128-453C-9F0E-BEE826955266),
+  oleautomation
+]
+interface IGoogleDesktopRegisterQueryPlugin : IDispatch {
+  /**
+  * Allows a plugin access to the Query API
+  *
+  * @param plugin_class the progid or the CLSID of the plugin.
+  * @param cookie [out] Upon successful return, will hold a cookie that must be
+  *   used in a call to @ref IGoogleDesktopQueryAPI::Query[Ex].
+  * @param read_only If set to true, queries can be performed but items can not
+  *   be removed from the index by calling RemoveFromIndex in the Query API.
+  *   If the caller sets read_only to VARIANT_FALSE, then Google Desktop may
+  *   display an extra warning message to the user upon registration.
+  * @return S_OK if the registration was successful, otherwise an error value.
+  */
+  [id(GD_DISPID_REGISTER_QUERY_PLUGIN)]
+  HRESULT RegisterPlugin([in] BSTR plugin_class, [in] VARIANT_BOOL read_only,
+                         [out, retval] long* cookie);
+};
+[
+  object,
+  uuid(B7BC8A9B-DC73-42d4-AB7D-17178619C8E4),
+  dual,
+  oleautomation,
+  pointer_default(unique)
+]
+// Components are required to to call this interface to register
+// themselves with Google Desktop for whatever purpose.
+// The purpose of this object is to collect all registrations a plugin makes
+// under a single canonical name and into a single logical operation.
+// A plugin can then undo all its registrations in a single operation
+// by calling UnregisterComponent on its canonical name.
+interface IGoogleDesktopRegistrar : IDispatch {
+  // Starts a component registration by declaring the canonical name for
+  // the component along with other descriptive information about the
+  // component.
+  // Note that to make a registration permanent, it's necessary to call
+  // SubmitRegistration().
+  //
+  // @param component_guid_or_progid a string spelling out the component's
+  //        canonical name, which is a GUID. This may also be specified as
+  //        any progID that can be resolved with CLSIDFromProgID.
+  // @param component_description is a VARIANT containing a SAFEARRY.
+  //        The safearray contains pairs, where element 2N is the name of
+  //        a descriptive parameter, and element 2N+1 is the value of that
+  //        parameter.
+  //        Mandated description parameters are:
+  //          - "Title" component title as displayed on the preference page.
+  //          - "Description", component description as displayed on the
+  //             preferences page.
+  //          - "ICON" the component icon, which is a string pointing to an ICON
+  //             resource. This string is of the format <module>,<id>, e.g
+  //             "c:\program files\boo\comp.dll,23".
+  [id(GD_DISPID_START_COMPONENT_REGISTRATION)]
+  HRESULT StartComponentRegistration(
+              [in] BSTR component_guid_or_progid,
+              [in] VARIANT component_description);
+
+  // Provides the requested type of registration interface to act on the 
+  // component currently started for registration.
+  // @param registration_type a stringified CLSID or a progid to the type
+  //      of registration required. The following progids are defined.
+  //      "GoogleDesktop.IndexingRegistration" = for indexing plugins
+  //      "GoogleDesktop.EventRegistration" = for event plugins
+  //      "GoogleDesktop.DisplayPluginRegistration" = for display plugins
+  //      "GoogleDesktop.ActionRegistration" = for action plugins
+  //      "GoogleDesktop.QueryRegistration" = for query plugins
+  //      "GoogleDesktop.PersonalizationRegistration" = for personalization plugins
+  // @param registration_interface provides the requested registration
+  //      mechanism
+  [id(GD_DISPID_GET_REGISTRATION_INTERFACE)]
+  HRESULT GetRegistrationInterface(
+              [in] BSTR registration_type,
+              [out, retval] IUnknown **registration_interface);
+
+  // @returns S_OK if committing the registrations succeeded (& the
+  //    registrations were all new? - S_FALSE if the registrations were
+  //    overlapping but non-conflicting with existing registrations).
+  //    appropriate error on failure, such as if the component's classID
+  //    or appID is not registered, if the component is prohibited by
+  //    policy or whatever.
+  [id(GD_DISPID_FINISH_COMPONENT_REGISTRATION)]
+  HRESULT FinishComponentRegistration();
+
+  // Invoked by a component on unregistration.
+  // Cancels all registrations the component has made.
+  [id(GD_DISPID_UNREGISTER_COMPONENT)]
+  HRESULT UnregisterComponent(
+              [in] BSTR component_guid_or_progid);
+};
+
+[
+  object,
+  uuid(151857B2-26E0-4f4d-ACED-4F7E4B2065EF),
+  dual,
+  oleautomation,
+  pointer_default(unique)
+]
+// Indexing components interested in crawl events call this to register their
+// event interest. Components who are only interested in generating
+// events needn't concern themselves with this interface.
+// @note Components implementing multiple plugin types (e.g. indexing, display
+//       etc) should use the IGoogleDesktopRegistrar interface
+interface IGoogleDesktopIndexingComponentRegistration : IDispatch {
+  // Must be invoked by every component interested in receiving
+  // crawler events for a file extension.
+  // @param extension_handled an extension this component wishes to handle
+  // @return S_OK on success
+  //         E_EXTENSION_REGISTERED in case the extension conflicts with an
+  //            existing registration. 
+  //         another appropriate error.
+  [id(GD_DISPID_REGISTER_EXTENSION)]
+  HRESULT RegisterExtension(
+              [in] BSTR extension_handled);
+};
+
+[
+  object,
+  uuid(9B311E80-BC95-4518-A58C-446EC9A082B5),
+  dual,
+  oleautomation,
+  pointer_default(unique)
+]
+// Indexing components are required to to call this interface to register
+// themselves with Google Desktop Search before they can send events
+// or receive crawl events.
+// @note Components implementing multiple plugin types (e.g. indexing, display
+//       etc) should use the IGoogleDesktopRegistrar interface
+interface IGoogleDesktopIndexingComponentRegister : IDispatch {
+  // Must be invoked by every component interested in generating
+  // events or receiving crawler events.
+  // @param component_guid_or_progid a string spelling out the component's GUID 
+  //        or its ProgID.
+  // @param component_description is a VARIANT containing a SAFEARRY. 
+  //        The safearray contains pairs, where element 2N is the name of 
+  //        a descriptive parameter, and element 2N+1 is the value of that
+  //        parameter. 
+  //        Mandated description parameters are:
+  //          - "Title" component title as displayed on the preference page.
+  //          - "Description", component description as displayed on the 
+  //             preferences page.
+  //          - "ICON" the component icon, which is a string pointing to an ICON
+  //             resource. This string is of the format <module>,<id>, e.g
+  //             "c:\program files\boo\comp.dll,23".
+  // @return S_OK on success, appropriate error on failure, such
+  //        as if the component's classID or appID is not registered, 
+  //        if the component is prohibited by policy or whatever.
+  // @note for executables and plugins that wish to generate events, we 
+  //        mandate that they register a classid and/or a progid, in order 
+  //        to have a guaranteed unique identifier for the event generator.
+  [id(GD_DISPID_REGISTER_INDEXING_COMPONENT)]
+  HRESULT RegisterIndexingComponent(
+              [in] BSTR component_guid_or_progid,
+              [in] VARIANT component_description,
+              [out, retval] IGoogleDesktopIndexingComponentRegistration **registration);
+
+  // Invoked by a component on unregistration. 
+  // Cancels the component registration, along with all file types
+  // it has registered for.
+  [id(GD_DISPID_UNREGISTER_INDEXING_COMPONENT)]
+  HRESULT UnregisterIndexingComponent(
+              [in] BSTR component_guid_or_progid);
+};
+
+[
+  object,
+  uuid(BDAC0047-4759-43a1-BA04-B148E1679E87),
+  dual,
+  oleautomation,
+  pointer_default(unique)
+]
+// Event interface, one of these is constructed for every event generated
+// by a component
+interface IGoogleDesktopEvent : IDispatch {
+  // Add a typed property.
+  // @param property_name name of the property, the name must exist in 
+  //    the selected schema.
+  // @param property_value value of the property, must be typed appropriately
+  //    for the selected schema.
+  // @return 
+  //        S_OK in success,
+  //        E_NO_SUCH_PROPERTY if property does not exist,
+  //          any of the errors returned from VariantChangeType if the 
+  //          type of the property does not match the type declared in the
+  //          schema, or cannot be coerced to the correct type.
+  //        Another appropriate error value.
+  [id(GD_DISPID_ADD_PROPERTY)]
+  HRESULT AddProperty(BSTR property_name, VARIANT property_value);
+  
+  // Sends the event. 
+  // @param event_flags event flags, a bitwise OR of EventFlags enumeration
+  //        values.
+  // @note when sending historical events (marked with the
+  //        EventFlagHistorical flag) returning from this method may be
+  // delayed until the event is successfully delivered.
+  // 
+  // @note events sent as result of crawl event notifications should have
+  // not set the EventFlagHistorical flag, since the event might have been
+  // generated as result of realtime filesystem changes.
+  // 
+  // @note it is not possible to resend, nor to add properties to a sent
+  // event.
+  [id(GD_DISPID_SEND)]
+  HRESULT Send(long event_flags);
+};
+
+[
+  object,
+  uuid(79EDFDE2-6BC6-41BD-A54C-F8AFF2F3789A),
+  dual,
+  oleautomation,
+  pointer_default(unique)
+]
+// Event interface 2
+interface IGoogleDesktopEvent2 : IGoogleDesktopEvent {
+  // Try sending an event immediately. In the case of historical events, the
+  // send operation may be aborted with a E_SEND_DELAYED error code and
+  // control returned promptly to the sender. The sender should periodically
+  // call this method again (after the suggested retry interval) until
+  // successful delivery or a different error code is received.
+  // 
+  // @param event_flags event flags, a bitwise OR of EventFlags enumeration
+  // values.
+  // 
+  // @param retry_in_millisec delay to retry sending (in milliseconds)
+  // 
+  // @return S_OK on successful event sending, E_SEND_DELAYED and a retry
+  //         estimate if the sending was delayed otherwise an appropriate
+  //         error code if the sending failed
+  [id(GD_DISPID_SEND_EX)]
+  HRESULT SendEx([in] long event_flags, [out, retval] long * retry_in_millisec);
+}
+
+[
+  object,
+  uuid(1668C88E-4BBA-4569-AFCD-DB1015B6519C),
+  dual,
+  oleautomation,
+  pointer_default(unique)
+]
+/**
+* Allows access to event properties as events are delivered to event 
+* subscribers.
+*/
+interface IGoogleDesktopNotifyEvent : IDispatch {
+  /**
+  * Allows read-only access to named event properties.
+  */
+  [id(DISPID_VALUE), //id(GD_DISPID_GET_PROPERTY),
+   helpstring("Returns the value of a named property")]
+  HRESULT GetProperty([in] BSTR property_name, [out, retval] VARIANT* property_value);
+
+  /**
+  * @returns The name of the schema for the event.
+  */
+  [id(GD_DISPID_SCHEMA_NAME), propget, 
+   helpstring("Holds the name of the schema that the event is derived from")]
+  HRESULT SchemaName([out, retval] BSTR* schema_name);
+};
+
+[
+  object,
+  uuid(A79E51C6-DB2D-4a44-848E-A8EBB22E5337),
+  dual,
+  oleautomation,
+  pointer_default(unique)
+]
+// Factory interface to yield new events.
+interface IGoogleDesktopEventFactory : IDispatch {
+  // Creates a new event to the specified schema.
+  // @param component_guid_or_progid a string spelling out the creating 
+  //        component's GUID or its appID.
+  // @param schema_name the requested event schema.
+  // @return S_OK on success,
+  //        E_NO_SUCH_SCHEMA if schema does not exist,
+  //        otherwise an appropriate error
+  [id(GD_DISPID_CREATE_EVENT)]
+  HRESULT CreateEvent(
+              [in] BSTR component_guid_or_progid,
+              [in ]BSTR schema_name,
+              [out, retval] IDispatch **event);
+};
+
+
+[
+  uuid(A1DE6DB8-B20F-445c-BFDE-16C8D53A2FA1)
+]
+// This is implemented by components that wish to receive crawl notifications
+// The component is responsible for instantiating the event factory and 
+// issuing the appropriate events
+dispinterface DGoogleDesktopFileNotify {
+properties:
+methods:
+  // Invoked when the crawler comes across a file registered to this 
+  // component. Crawl components implement this function, then create and send
+  // zero or more events - as appropriate for the file.
+  // @param full_path_to_file the file to handle
+  // @param event_factory event factory for creating the events
+  // @return 
+  //      S_OK if the file was handled, 
+  //      an appropriate error otherwise.
+  // @note the crawler may do special handling for certain error values. 
+  //      In particular it may retry indexing for some specific errors, 
+  //      such as e.g.HRESULT_FROM_WIN32(ERROR_SHARING_VIOLATION), so components
+  //      should be as accurate in error reporting as possible.
+  //      The crawler may also use any error info object returned from the 
+  //      component for logging and reporting, so don't skimp on error 
+  //      reporting through SetErrorInfo.
+  // The DISPID for this method is left as 0x00000001 here but in actuality
+  // it will be learned at runtime, as it might be different from one handler
+  // to another.
+  [id(0x00000001)]
+  HRESULT HandleFile(
+              [in] BSTR full_path_to_file,
+              [in] IDispatch *event_factory);
+};
+
+[
+  object,
+  uuid(9575DED8-9BA4-4a3b-83AA-59B2CAD0CDEF),
+  dual,
+  nonextensible,
+  helpstring("Allows for per-subscription configuration"),
+  pointer_default(unique)
+]
+/**
+* Subscription interface for controlling how a subscription behaves.
+* Inherits from @ref IGoogleDesktopFilterCollection and adds the 
+* option of disabling/enabling a subscription.
+* @note When a subscription is first created, it is turned off by default.
+*/
+interface IGoogleDesktopEventSubscription : IGoogleDesktopFilterCollection {
+  [id(GD_DISPID_ACTIVE), propget, helpstring("On/off switch for event stream")]
+  HRESULT active([out, retval] VARIANT_BOOL* event_stream_enabled);
+
+  [id(GD_DISPID_ACTIVE), propput, helpstring("On/off switch for event stream")]
+  HRESULT active([in] VARIANT_BOOL event_stream_enabled);
+};
+
+[
+  object,
+  uuid(D7D23586-2724-4b05-AF2D-67B94703FEEA),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+/**
+* Entry point interface to the Event Framework.
+* Use this interface to establish an event subscription and start 
+* receiving event notifications.
+* @note Before you can call the @ref Subscribe method successfully, you
+*   must have registered your component via the @ref
+*   IGoogleDesktopRegisterEventPlugin interface.
+*/
+interface IGoogleDesktopEventPublisher : IDispatch {
+  /**
+  * Establishes a subscription with the event framework.
+  * Subscriptions are turned off by default, so the user must set the
+  * 'active' property to VARIANT_TRUE.
+  * @param registration_cookie a cookie received from the registration 
+  *   procedure. @see IGoogleDesktopRegisterEventPlugin.
+  * @param subscriber The object that will receive notification calls when
+  *   events are received.  Out-of-proc subscribers implement IDispatch on this
+  *   object and receive calls on either a method named "OnNewEvent" or 
+  *   the default method that has the dispid DISPID_VALUE.
+  *   OnNewEvent accepts a single argument of type
+  *   @ref IGoogleDesktopNotifyEvent.
+  *   INFO: When historical indexing has completed, this argument is set to
+  *   NULL.  During historical indexing, events are not delivered
+  *   out-of-proc for performance reasons.
+  * @param subscription [out] receives the subscription object.
+  */
+  [id(GD_DISPID_SUBSCRIBE),
+   helpstring("Call to start receiving notification events")]
+  HRESULT Subscribe([in] long registration_cookie,
+                    [in] IUnknown* subscriber, 
+                    [out, retval] IGoogleDesktopEventSubscription** subscription);
+  /**
+  * Deactivates a subscription.
+  */
+  [id(GD_DISPID_UNSUBSCRIBE),
+   helpstring("Call to stop receiving notification events. Frees any associated resources.")]
+  HRESULT Unsubscribe([in] IGoogleDesktopEventSubscription* subscription);
+};
+
+[
+  object,
+  uuid(B7734D6E-C899-4322-B811-B973071D6628),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+// Interface that allows filtering of event based on schemas
+interface IGoogleDesktopSchemaFilter : IDispatch {
+  [id(GD_DISPID_ALLOW_NONE), 
+   helpstring("Clears all allowed values and disables all events")]
+  HRESULT AllowNone();
+
+  [id(GD_DISPID_ALLOW), 
+   helpstring("Add the specified schema to the array of allowed schema names")]
+  HRESULT Allow([in] BSTR schema_name);
+
+  [id(GD_DISPID_DISALLOW), 
+   helpstring("Remove the specified schema from the array of allowed schema names")]
+  HRESULT Disallow([in] BSTR schema_name);
+
+  [id(GD_DISPID_GET_ALLOWED), 
+   helpstring("Retrieves the array of allowed schema names")]
+  HRESULT GetAllowed([out, retval] SAFEARRAY(VARIANT)* schema_names);
+};
+
+[
+  object,
+  uuid(08A02699-A4BC-41a0-BFEE-A58395ED22A7),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+// Interface that allows filtering of events based on the presence or absence
+// of text strings in specified event properties
+// The filters are case insensitive
+interface IGoogleDesktopSchemaPropertyFilter : IDispatch {
+  [id(GD_DISPID_ADD_REQUIRED), 
+   helpstring("Adds the specified string to the array of strings required in the property")]
+  HRESULT AddRequiredText([in] BSTR property_name, [in] BSTR required);
+  
+  [id(GD_DISPID_ADD_EXCLUDED), 
+   helpstring("Adds the specified string to the array of strings excluded from the property")]
+  HRESULT AddExcludedText([in] BSTR property_name, [in] BSTR excluded);
+  
+  [id(GD_DISPID_REMOVE_REQUIRED), 
+   helpstring("Removes the specified string from the array of strings required in the property")]
+  HRESULT RemoveRequiredText([in] BSTR property_name, [in] BSTR required);
+  
+  [id(GD_DISPID_REMOVE_EXCLUDED),
+   helpstring("Removes the specified string from the array of strings excluded from the property")]
+  HRESULT RemoveExcludedText([in] BSTR property_name, [in] BSTR excluded);
+  
+  [id(GD_DISPID_GET_REQUIRED), 
+   helpstring("Retrieves the array of strings required in the property")]
+  HRESULT GetRequiredText([in] BSTR property_name, [out, retval] SAFEARRAY(VARIANT)* required);
+  
+  [id(GD_DISPID_GET_EXCLUDED), 
+   helpstring("Retrieves the array of strings excluded from the property")]
+  HRESULT GetExcludedText([in] BSTR property_name, [out, retval] SAFEARRAY(VARIANT)* excluded);
+
+  [id(GD_DISPID_MATCH_WHOLE_WORD), 
+   propput, 
+   helpstring("Specifies if matching is restricted to whole words")]
+  HRESULT match_whole_word([in] VARIANT_BOOL whole);
+};
+
+[
+  object,
+  uuid(FD7977E1-9FB8-4053-BF8B-FEACC2EFC4C1),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+// Interface that allows filtering of events that are contextual in nature
+// (relate to the things the user is doing at the moment). These events
+// may not actually be indexed by the Google Desktop system (for instance,
+// the user may start a new program. Google Desktop may not index that
+// fact, but it may provide that information as a contextual result)
+interface IGoogleDesktopContextualFilter : IDispatch {
+  [id(GD_DISPID_ENABLE_CONTEXTUAL),
+    helpstring("enables contextual events in addition to all other events")]
+  HRESULT EnableContextualEvents();
+  [id(GD_DISPID_ENABLE_CONTEXTUAL_ONLY),
+    helpstring("enables only those events marked contextual")]
+  HRESULT EnableContextualEventsOnly();
+  [id(GD_DISPID_DISABLE_CONTEXTUAL),
+    helpstring("disables contextual events")]
+  HRESULT DisableContextualEvents();
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Query API
+
+// fwd declarations
+interface IGoogleDesktopQueryResultItem;
+interface IGoogleDesktopDocumentVersions;
+interface IGoogleDesktopQueryResultSet;
+interface IGoogleDesktopQueryResultSet2;
+interface IGoogleDesktopQuery;
+interface IGoogleDesktopQueryAPI;
+
+[
+  object,
+  uuid(0519A8C8-EB41-48AF-AB2D-A3D5BB0C7E4C),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+interface IGoogleDesktopDocumentVersions : IDispatch {
+  [id(DISPID_VALUE)]
+  HRESULT Item([in] long index, 
+               [out, retval] IGoogleDesktopQueryResultItem** ret);
+
+  [id(GD_DISPID_Q_COUNT), propget]
+  HRESULT count([out, retval] long* ret);
+};
+
+[
+  object,
+  uuid(2E7C367B-F2F9-4FC2-81EE-58C3BCB21EBB),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+/**
+* A single record in a result set.
+* Holds some meta data for the record, allows access to the document object
+* for this record and supports looking up dynamically added properties
+* @see IGoogleDesktopQueryResultItem::GetProperty.
+*/
+interface IGoogleDesktopQueryResultItem : IDispatch {
+  [id(DISPID_VALUE)] // [id(GD_DISPID_Q_GET_PROPERTY)]
+  HRESULT GetProperty([in] BSTR prop_name, [out, retval] VARIANT* value);
+
+  /**
+  * Removes this item from the index.
+  *
+  * @param remove_all_related_versions If set to VARIANT_TRUE, will remove
+  *   all versions of this file.  If set to VARIANT_FALSE, will only remove
+  *   this particular event.
+  *   NOTE: For email threads, setting this argument to true, will remove the
+  *   entire thread.
+  */
+  [id(GD_DISPID_Q_REMOVE_FROM_INDEX)]
+  HRESULT RemoveFromIndex([in] VARIANT_BOOL remove_all_related_versions);
+
+  /**
+  * @returns The name of the schema for the event.
+  */
+  [id(GD_DISPID_SCHEMA_NAME), propget]
+  HRESULT schema([out, retval] BSTR* schema_name);
+
+  /**
+  * For emails, this returns a list of emails in a thread.
+  * For files, it returns a list of all the events in the index.
+  */
+  [id(GD_DISPID_Q_GET_PROPERTY), propget]
+  HRESULT versions([out, retval] IGoogleDesktopDocumentVersions** ret);
+};
+
+[
+  object,
+  uuid(116E9B38-4E9E-4f34-AC8C-E82FFD28BBE8),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+interface IGoogleDesktopItemPropertyIterator : IDispatch {
+  [propget]
+  HRESULT name([out, retval] BSTR* name);
+  [propget] 
+  HRESULT value([out, retval] VARIANT * value);
+  /**
+  * @return VARIANT_FALSE if there are no more properties available
+  */
+  HRESULT Next([out, retval] VARIANT_BOOL * more);
+};
+
+/**
+* The ready-state of a result set.  While a result set is being populated
+* its state is GD_QRS_LOADING.  When all records have been fully sorted
+* and filtered, the state of the result set becomes GD_QRS_COMPLETE.
+*/
+[uuid(84382F99-9805-49E5-8739-38C25C828110)]
+typedef enum QRSReadyState {
+  GD_QRS_UNINITIALIZED = 0,
+  GD_QRS_LOADING,
+  GD_QRS_COMPLETE,
+  GD_QRS_FAILED,
+} QRSReadyState;
+
+[
+  object,
+  uuid(745C5E13-3B8D-43C3-9C84-0BD1BE5B475B),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+/**
+* A result set of items for a GD query.
+* The recordset is populated asynchronously and its current state can be 
+* queried by checking the @ref readystate property. The @ref count 
+* property is an estimated value until the readystate becomes 
+* GD_QRS_COMPLETE. Records in the result set are enumerated by calling the 
+* @ref Next method. 
+*/
+interface IGoogleDesktopQueryResultSet : IDispatch {
+  [id(GD_DISPID_Q_NEXT)]
+  // @returns S_FALSE + null on EOF
+  HRESULT Next([out, retval] IGoogleDesktopQueryResultItem** next);
+
+  [id(GD_DISPID_Q_READY_STATE), propget]
+  HRESULT readystate([out, retval] QRSReadyState* state);
+
+  /**
+  * This property gets adjusted as the records get filtered.
+  * When the readystate becomes GD_QRS_COMPLETE, this property
+  * holds the correct count.  Until then, the count is an 
+  * estimated value.
+  */
+  [id(GD_DISPID_Q_COUNT), propget]
+  HRESULT count([out, retval] long* ret);
+
+  /**
+  * Allows the caller to check how many records can be fetched without 
+  * blocking when calling Next().
+  */
+  [id(GD_DISPID_Q_AVAILABLE_COUNT), propget]
+  HRESULT available_count([out, retval] long* ret);
+
+  /**
+  * A property that allows the user to enable/disable processing of window
+  * messages when a wait is needed in the call to Next().
+  * By default message processing is enabled since it is required in
+  * some programming languages so that async events, repainting can be performed
+  * while a call to Next() is being done.
+  */
+  [id(GD_DISPID_Q_ALLOW_MSG_WHILE_WAIT), propget]
+  HRESULT enable_msg_loop([out, retval] VARIANT_BOOL* enable);
+
+  [id(GD_DISPID_Q_ALLOW_MSG_WHILE_WAIT), propput]
+  HRESULT enable_msg_loop([in] VARIANT_BOOL enable);
+
+  [id(GD_DISPID_Q_CANCEL)]
+  HRESULT Cancel();
+};
+
+[
+  object, uuid(01DC3495-5365-4a81-A244-EA27791BAD27),
+  dual, nonextensible, pointer_default(unique)
+]
+/**
+* Extends IGoogleDesktopQueryResultSet to support event properties
+* and adds more properties
+*/
+interface IGoogleDesktopQueryResultSet2 : IGoogleDesktopQueryResultSet {
+  [propput, id(GD_DISPID_Q_ONREADYSTATECHANGE)]
+  HRESULT onreadystatechange([in] VARIANT handler);
+
+  [propput, id(GD_DISPID_Q_ONAVAILABLE)]
+  HRESULT onavailable([in] VARIANT handler);
+
+  [propput, id(GD_DISPID_Q_ONCOUNTCHANGE)]
+  HRESULT oncountchange([in] VARIANT handler);
+
+  [propget, id(GD_DISPID_Q_RESULT_SET_QUERY)]
+  HRESULT query([out, retval] BSTR * query);
+};
+
+/**
+* This enum is used in the GetOption and SetOption
+* methods in the IGoogleDesktopQuery interface.
+* To set the error mode, set the "error_mode" option
+* to one of the enumerated values.
+*/
+typedef enum GDQErrorMode {
+  //
+  // This is the default value.
+  // When set, meaningful error HRESULT values are returned
+  // when returning properties values that are not available.
+  //
+  GDQEM_REPORT_ERRORS = 0,
+
+  //
+  // When the error mode is set to this value, a success code
+  // is returned from functions that return ([out retval]) values
+  // that can be set to the equivalent of VT_NULL.
+  // For example IGoogleDesktopQueryResultItem::GetProperty will
+  // return S_FALSE and set the output parameter to VT_NULL when
+  // the property isn't available or can't be fetched.
+  // This functionality is provided for developers that work in
+  // programming languages that generate exceptions for every error
+  // return value and want to check for null rather than write try/catch
+  // exception handlers.
+  //
+  GDQEM_REPORT_SUCCESS_WHEN_CAN_RETURN_NULL,
+
+  // Our default
+  GDQEM_DEFAULT = GDQEM_REPORT_ERRORS,
+
+  // the highest currently supported value
+  GDQEM_MAX = GDQEM_REPORT_SUCCESS_WHEN_CAN_RETURN_NULL,
+} GDQErrorMode;
+
+[
+  object,
+  uuid(ED5535A3-A40D-4AE2-9F88-37A0D15DE709),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+/**
+* GD Query object.
+*
+* Allows callers to set advanced options on a query before calling
+* the Execute method to get the query results.
+*/
+interface IGoogleDesktopQuery : IDispatch {
+  [id(GD_DISPID_Q_SET_OPTION)]
+  HRESULT SetOption([in] BSTR name, [in] VARIANT value);
+
+  [id(GD_DISPID_Q_GET_OPTION)]
+  HRESULT GetOption([in] BSTR name, [out, retval] VARIANT* value);
+
+  [id(GD_DISPID_Q_QUERY_PROP), propget]
+  HRESULT query([out, retval] BSTR* ret);
+
+  [id(GD_DISPID_Q_EXECUTE)]
+  HRESULT Execute([out, retval] IGoogleDesktopQueryResultSet** results);
+};
+
+[
+  object,
+  uuid(D5D277C7-BC90-437f-8151-E0645B6E6368),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+interface IGoogleDesktopQuery2 : IGoogleDesktopQuery {
+  /**
+  * Allows callers to get the query result set prior to execution,
+  * so they can set callback functions on the result set prior to 
+  * starting the query.
+  * If this function is called prior to execute, then we guarantee
+  * that the return value of the first Execute call after this call
+  * will be the same result set.
+  * @note each call to PrepareResultSet generates a new query result set
+  */
+  [id(GD_DISPID_Q_PREPARE_RESULT_SET)]
+  HRESULT PrepareResultSet(
+    [out, retval] IGoogleDesktopQueryResultSet** results);
+};
+
+[
+  object,
+  uuid(42761625-A427-4e24-9011-B80AC8112677),
+  dual,
+  nonextensible,
+  pointer_default(unique)
+]
+interface IGoogleDesktopQueryAPI2 : IGoogleDesktopQueryAPI {
+  // Certain "queries" are supported on events. For instance, you can query an
+  // event for its versions, or you can "query" an event to remove it from
+  // the index. To perform these actions, you need to have access to the
+  // query API, and need an IGoogleDesktopQueryResultItem for that event.
+  // This function provides that. Currently the input VARIANT must be of
+  // type VT_UNKNOWN/VT_DISPATCH and must hold an IGoogleDesktopNotifyEvent
+  [id(GD_DISPID_Q_QUERY_FOR_EVENT)]
+  HRESULT QueryForEvent([in] long cookie, 
+                        [in] VARIANT event, 
+                        [out, retval] IGoogleDesktopQueryResultItem **item);
+};
+
+// If an event matches a particular topic, then its topic_id will
+// be filled by the Google Desktop system with the best match from 
+// the GDTopicProfileId enum
+[uuid(BF9C7E24-197E-4d21-9015-30D7D2D34A26)]
+typedef enum GDTopicProfileId {
+  TOPIC_UNKNOWN = -1,
+  TOPIC_BUSINESS = 0,
+  TOPIC_FINANCE = 1,
+  TOPIC_NEWS = 2,
+  TOPIC_KIDS = 3,
+  TOPIC_GAMES = 4,
+  TOPIC_HEALTH = 5,
+  TOPIC_TRAVEL = 6,
+  TOPIC_SCIENCE = 7,
+  TOPIC_SHOPPING = 8,
+  TOPIC_COMPUTERS = 9,
+  TOPIC_TECHNOLOGY = 10,
+  TOPIC_PROGRAMMER = 11,
+  TOPIC_WEBLOGS = 12,
+  TOPIC_SOCIAL = 13,
+  TOPIC_SPORTS = 14,
+  TOPIC_ENTERTAINMENT = 15,
+  TOPIC_MOVIES = 16,
+  TOPIC_TV = 17,
+  TOPIC_CAREERS = 18,
+  TOPIC_WEATHER = 19,
+  TOPIC_REALESTATE = 20,
+  NUMBER_TOPICS = 21,
+} GDTopicProfileId;
+
+
+[
+  object,
+  uuid(18954551-A102-4735-976A-25DC33C93E1F),
+  dual,
+  oleautomation,
+  pointer_default(unique)
+]
+// Status interface
+interface IGoogleDesktopStatus : IDispatch {
+  // Invoked to retrive the value of the specified property
+  [id(GD_DISPID_STATUS_GET_PROPERTY)]
+  HRESULT GetProperty([in] BSTR property_name,
+                      [out, retval] VARIANT* value);
+
+
+  // Invoked to set the value of the specified property
+  [id(GD_DISPID_STATUS_SET_PROPERTY)]
+  HRESULT SetProperty([in] BSTR property_name,
+                      [in] VARIANT value);
+
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// library block
+
+[
+  uuid(3D056FE7-EA8E-481a-B18F-0B02EBF6B3C1),
+  version(1.1),
+  helpstring("Google Desktop Search API 1.1 Type Library")
+]
+library GoogleDesktopAPILib {
+  importlib("stdole2.tlb");
+
+  [
+    object,
+    uuid(4BD9C44A-EBB9-47ec-8449-8D777F5708BE),
+    dual,
+    oleautomation,
+    pointer_default(unique)
+  ]
+  // @note This interface must be inside the 'library' section since it
+  //    uses the 'optional' attribute.  Look for MIDL2402 warning for more info.
+  interface IGoogleDesktopNotifyEvent2 : IGoogleDesktopNotifyEvent {
+    [id(GD_DISPID_GET_KEYWORDS), helpstring("Extracts the keywords from event's text_content property")]
+    /**
+    * Returns keywords for the item based on the text_content property of the 
+    * item 
+    *  
+    * @note This function ONLY looks at the text_content, and not other 
+    * fields, when generating these keywords. You may want to consider other 
+    * fields yourself. 
+    *  
+    * Keywords are returned in order of weight, highest to lowest. Higher 
+    * weights are given to more relevant keywords. 
+    *  
+    * @param num_keywords An integer specifying how many keywords to return. 
+    *                     The default value is 10.
+    *  
+    * @param include_weight If set to VARIANT_FALSE your keywords will come 
+    *                       back like "keyword1 keyword2 keyword3".  IF set to
+    *                       VARIANT_TRUE they will come back like
+    *                       "keyword1:weight1 keyword2:weight2
+    *                       keyword3:weight3".  The default value of this
+    *                       parameter is VARIANT_FALSE.
+    *  
+    * @param keywords Points to a BSTR pointer that will receive the address 
+    *                 of a new BSTR containing the keywords.
+    */
+    HRESULT GetKeywords([in, optional] VARIANT num_keywords,
+                        [in, optional] VARIANT include_weight, 
+                        [out, retval] BSTR* keywords);
+
+  };
+
+  [
+    object,
+    uuid(FEF90C69-4A90-46be-9B9E-C547AA10F170),
+    dual,
+    nonextensible,
+    helpstring("Holds a collection of filters for event stream filtering"),
+    pointer_default(unique)
+  ]
+  /**
+  * Subscription interface for controlling how a subscription behaves.
+  * Before events are delivered to subscribers, they must pass through any 
+  * filters that are active on the subscription.
+  */
+  // @note This interface must be inside the 'library' section since it
+  //    uses the 'optional' attribute.  Look for MIDL2402 warning for more info.
+  interface IGoogleDesktopFilterCollection : IDispatch {
+    [id(GD_DISPID_FILTER_OPERATOR), propget, 
+      helpstring("Operator used to decide how multiple filter results are combined")]
+    HRESULT filter_operator([out, retval] GoogleDesktopSubscriptionFilterOperator * op);
+
+    [id(GD_DISPID_FILTER_OPERATOR), propput, 
+       helpstring("Operator used to decide how multiple filter results are combined")]
+    HRESULT filter_operator([in] GoogleDesktopSubscriptionFilterOperator op);
+
+    [id(GD_DISPID_FILTER_NEGATE), propget, 
+       helpstring("If true, negates the result of filtering")]
+    HRESULT negate_result([out, retval] VARIANT_BOOL * not);
+    
+    [id(GD_DISPID_FILTER_NEGATE), propput,
+       helpstring("If true, negates the result of filtering")]
+    HRESULT negate_result([in] VARIANT_BOOL not);
+    
+    [id(GD_DISPID_ADD_FILTER), helpstring("Add a new filter for the event stream")]
+    HRESULT AddFilter([in] BSTR progid, [in, optional] VARIANT name,
+					  [out, retval] IDispatch** filter);
+
+    [id(GD_DISPID_REMOVE_FILTER), helpstring("Remove a filter from the event stream")]
+    HRESULT RemoveFilter([in] IDispatch* filter);
+
+    [id(GD_DISPID_FIND_FILTER), helpstring("Find an event filter given a name")]
+    HRESULT FindFilter([in] BSTR filter_name, [out, retval] IDispatch** filter);
+
+    [id(GD_DISPID_REMOVE_ALL_FILTERS), helpstring("Removes all filters from the subscription")]
+    HRESULT RemoveAllFilters();
+  };
+
+  [
+    object,
+    uuid(CEA958A8-244C-49d7-819C-880648B32A69),
+    dual,
+    nonextensible,
+    pointer_default(unique)
+  ]
+  // @note This interface must be inside the 'library' section since it
+  //    uses the 'optional' attribute.  Look for MIDL2402 warning for more info.
+  interface IGoogleDesktopQueryResultItem2 : IGoogleDesktopQueryResultItem {
+    [id(GD_DISPID_Q_GET_KEYWORDS), helpstring("Extracts the keywords from result's text_content property")]
+    /**
+    * Returns keywords for the item based on the text_content property of the 
+    * item.
+    *  
+    * @note This function ONLY looks at the text_content, and not other 
+    * fields, when generating these keywords. You may want to consider other 
+    * fields yourself. 
+    *  
+    * Keywords are returned in order of weight, highest to lowest. Higher 
+    * weights are given to more relevant keywords
+    *  
+    * @param num_keywords An integer that specifies how many keywords to 
+    * return; the default value is 10.
+    *  
+    * @param include_weight If set to VARIANT_FALSE, your keywords will come 
+    *                       back like "keyword1 keyword2 keyword3".  If set to
+    *                       VARIANT_TRUE they will come back like
+    *                       "keyword1:weight1 keyword2:weight2
+    *                       keyword3:weight3".  The default value of this
+    *                       parameter is VARIANT_FALSE.
+    *  
+    * @param keywords Points to a BSTR pointer that will receive the address 
+    *                 of a newly allocated string containing the keywords.
+    *  
+    * @note If on_keywords_ready is set using IGoogleDesktopQueryResultItem3, 
+    * then there will be no returned keywords, and instead the function will 
+    * return immediately and the keywords will be returned in the callback 
+    */
+    HRESULT GetKeywords([in, optional] VARIANT num_keywords,
+                        [in, optional] VARIANT include_weight, 
+                        [out, retval] BSTR* keywords);
+
+    [id(GD_DISPID_Q_GET_SNIPPET)] 
+    /**
+    * Returns a snippet for the result, based on the query that generated this 
+    * result. By default, the maximum characters returned in the snippet is 
+    * 200. If you want the snippet to be based on something other than the 
+    * query, pass in specific words to highlight. 
+    */
+    HRESULT GetSnippet([in, optional] VARIANT max_chars, [in, optional] VARIANT words_to_hilite, [out, retval] BSTR* snippet);
+  };
+
+  [
+    object,
+    uuid(46FCE283-25D0-44f5-8EF4-33EC5328327B),
+    dual,
+    nonextensible,
+    pointer_default(unique)
+  ]
+  // @note This interface must be inside the 'library' section since it
+  //    uses the 'optional' attribute.  Look for MIDL2402 warning for more info.
+  interface IGoogleDesktopQueryResultItem3 : IGoogleDesktopQueryResultItem2 {
+    /**
+    * If a callback function of type IDispatch is put here, then when keywords
+    * are ready, this callback will receive the keywords. The function with
+    * dispid DISPID_VALUE will be called on the IDispatch interface
+    * This function should take one BSTR argument, namely the keywords
+    */
+    [id(GD_DISPID_Q_ONKEYWORDSREADY), propput]
+    HRESULT onkeywordsready([in] VARIANT callback);
+
+    /**
+    * Opens the query item.
+    * @param action_id Specifies an action to execute, as per the 
+    *                  GoogleDesktopActionAPI. If no action is specified, then
+    *                  the default is ACTION_OPEN_SEARCH_RESULT.
+    */
+    [id(GD_DISPID_Q_OPEN)]
+    HRESULT Open([in, optional] VARIANT action_id);
+
+    /**
+    * Returns an iterator on the properties of this item.
+    * The iterator does not iterate in any standard order 
+    */
+    HRESULT GetPropertyIterator(
+      [out, retval] IGoogleDesktopItemPropertyIterator ** prop_iterator);
+  };
+
+  [
+    object,
+    uuid(CE714D64-8BA7-4c0a-BC7A-B9249731E3F6),
+    dual,
+    nonextensible,
+    pointer_default(unique)
+  ]
+  /**
+  * GD Query API.
+  * Allows for executing a simple query and more advanced query for additional
+  * filtering options and query control.
+  * Call the @ref Query method to get a result set with the default sorting
+  * and filters applied.  To control these options and optionally add filters
+  * to the query, call the @ref QueryEx method.
+  */
+  // @note This interface must be inside the 'library' section since it
+  //    uses the 'optional' attribute.  Look for MIDL2402 warning for more info.
+  interface IGoogleDesktopQueryAPI : IDispatch {
+    [id(GD_DISPID_Q_QUERY)]
+    HRESULT Query([in] long cookie, [in] BSTR query,
+                  [in, optional] VARIANT category,
+                  [in, optional] VARIANT ranking,
+                  [out, retval] IGoogleDesktopQueryResultSet** results);
+
+    [id(GD_DISPID_Q_QUERY_EX)]
+    HRESULT QueryEx([in] long cookie, [in] BSTR query,
+                    [in, optional] VARIANT category,
+                    [in, optional] VARIANT ranking,
+                    [out, retval] IGoogleDesktopQuery** q);
+  };
+
+  typedef enum EventFlags {
+    // Set this flag on events that you want indexed
+    EventFlagIndexable   = 0x00000001,
+    // Set this flag on events that relate to what the user is currently doing
+    // (e.g. if the user is reading an email, then send the event with an
+    // Indexable and Contextual flag)
+    EventFlagContextual  = 0x00000002,
+    // Set this flag when the event is historical, i.e. generated from a crawl
+    // over files or other data generated in the past. This is as opposed to 
+    // events generated in realtime from events presently occurring
+    EventFlagHistorical  = 0x00000010,
+    // Set this flag to indicate the event should replace a previous instance.
+    // That initial event must have had the flag as well.  Currently only
+    // supported for the Google.Desktop.Email schema.
+    EventFlagReplace     = 0x00002000,
+
+    // NOTE: the following flags should NOT be set by clients. They are set by
+    // the indexing process, and clients can view them when querying for
+    // events or using the event notification mechanism.
+
+    // Indicates that the event is a duplicate, based on our duplicate detection
+    // algorithms. Note that these algorithms consider many aspects of an
+    // event, so two events that differ slightly in their content may still in
+    // fact be marked as a duplicate. If this flag is set, then the event's
+    // event_id and doc_id properties refer to the original event.
+    // 
+    // @note This flag is only set for events that pass through the event
+    // notification framework. Duplicate events themselves are not stored in
+    // the database.
+    EventFlagDuplicate   = 0x00004000,
+
+  } EventFlags;
+
+  // pull these interfaces into the typelib
+  interface DGoogleDesktopFileNotify;
+  interface IGoogleDesktopEvent;
+  interface IGoogleDesktopEvent2;
+  interface IGoogleDesktopFilterCollection;
+  interface IGoogleDesktopEventSubscription;
+  interface IGoogleDesktopNotifyEvent;
+  interface IGoogleDesktopNotifyEvent2;
+  interface IGoogleDesktopComponentRegistration;
+  interface IGoogleDesktopRegisterIndexingPlugin;
+  interface IGoogleDesktopRegisterEventPlugin;
+  interface IGoogleDesktopRegisterCustomAction;
+  interface IGoogleDesktopRegisterDisplayPlugin;
+  interface IGoogleDesktopRegisterDisplayPlugin2;
+  interface IGoogleDesktopQueryAPI;
+  interface IGoogleDesktopQueryAPI2;
+  interface IGoogleDesktopQuery;
+  interface IGoogleDesktopQuery2;
+  interface IGoogleDesktopQueryResultSet;
+  interface IGoogleDesktopQueryResultSet2;
+  interface IGoogleDesktopQueryResultItem;
+  interface IGoogleDesktopQueryResultItem2;
+  interface IGoogleDesktopQueryResultItem3;
+  interface IGoogleDesktopRegisterQueryPlugin;
+  interface IGoogleDesktopDocumentVersions;
+  interface IGoogleDesktopItemPropertyIterator;
+  interface IGoogleDesktopStatus;
+
+  [ uuid(579822B3-44CD-4786-83E0-AE32BCB9E6B1) ]
+  // Instantiate this class to get the event factory.
+  coclass GoogleDesktop {
+    [default] interface IGoogleDesktopEventFactory;
+  };
+
+  [ uuid(2C6F11D4-CF22-4e1f-A271-2A4A0393ADAC) ]
+  coclass GoogleDesktopEventPublisher {
+    [default] interface IGoogleDesktopEventPublisher;
+  };
+
+  [ uuid(BB8B07A0-B8D1-44e0-A262-C9B7212AEC68) ]
+  // Instantiate this class to get to the indexing registration mechanism
+  coclass GoogleDesktopIndexingComponentRegister {
+    [default] interface IGoogleDesktopIndexingComponentRegister;
+  };
+
+  [ uuid(AC129136-EB1C-4fff-B0A2-6D6761BE4138) ]
+  // Instantiate this class to get to the main registrar
+  coclass GoogleDesktopRegistrar {
+    [default] interface IGoogleDesktopRegistrar;
+  };
+
+  [ uuid(1B4C0C56-5990-4277-826E-1508037DD8A7) ]
+  coclass GoogleDesktopSchemaFilter {
+    [default] interface IGoogleDesktopSchemaFilter;
+  };
+
+  [ uuid(9130995A-B2F2-47c7-BD60-BC02E950A8A8) ]
+  coclass GoogleDesktopSchemaPropertyFilter {
+    [default] interface IGoogleDesktopSchemaPropertyFilter;
+  };
+
+  [ uuid(81ACBD30-3750-4c4e-BDA1-173FB509D475) ]
+  coclass GoogleDesktopContextualFilter {
+    [default] interface IGoogleDesktopContextualFilter;
+  };
+
+  [ uuid(2B62A832-2CA2-4843-86CA-45450D35EADA) ]
+  coclass GoogleDesktopFilterCollection {
+    [default] interface IGoogleDesktopFilterCollection;
+  };
+
+  [ uuid(4E26495C-CA41-4085-96C4-8CA805AF297E) ]
+  coclass GoogleDesktopQueryAPI {
+    [default] interface IGoogleDesktopQueryAPI2;
+  };
+
+  [ uuid(75B02994-EF97-421C-AACD-28DAC318129B) ]
+  coclass GoogleDesktopStatus {
+    [default] interface IGoogleDesktopStatus;
+  };
+};

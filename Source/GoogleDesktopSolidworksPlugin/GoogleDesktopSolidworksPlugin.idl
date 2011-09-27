@@ -1,0 +1,35 @@
+// GoogleDesktopSolidworksPlugin.idl : IDL source for GoogleDesktopSolidworksPlugin
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (GoogleDesktopSolidworksPlugin.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(A46BF71A-43C9-4B0E-8911-14A95E88A3BC),
+	dual,
+	nonextensible,
+	pointer_default(unique)
+]
+interface ISolidworksCrawlPlugin : IDispatch{
+	[id(1)] HRESULT HandleFile(BSTR full_path_to_file, IDispatch* event_factory);
+};
+[
+	uuid(42A6D99D-BAFD-4FA2-B0CF-51A014E8FB6D),
+	version(1.0),
+]
+library GoogleDesktopSolidworksPluginLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(D214A637-77E7-4754-8C30-56EB8D4EE935)		
+	]
+	coclass SolidworksCrawlPlugin
+	{
+		[default] interface ISolidworksCrawlPlugin;
+	};
+};
+

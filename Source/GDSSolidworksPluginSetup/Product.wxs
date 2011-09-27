@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product Id="78194577-95c0-40eb-a51a-15f2399af5f4" Name="GDSSolidworksPlugin" Language="1033" Version="1.0.0.0" Manufacturer="JasonNicholson" UpgradeCode="8fb8c3f1-8d56-42e2-8ebc-25d758e4ca30">
+        <Package InstallerVersion="200" Compressed="yes" />
+        <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Component Id="GDSSolidWorks" Guid="AF773D56-DFCE-11E0-B9C3-770D4924019B">
+                <File Id="GOOGLEDESKTOPSOLIDWORKSPLUGIN.DLL" Name="GoogleDesktopSolidworksPlugin.dll" Source="..\Release\GoogleDesktopSolidworksPlugin.dll" />
+                <File Id="GOOGLEDESKTOPSOLIDWORKSPLUGIN.PDB" Name="GoogleDesktopSolidworksPlugin.pdb" Source="..\Release\GoogleDesktopSolidworksPlugin.pdb" />
+                <File Id="IFILTERFILEREADER.DLL" Name="IFilterFileReader.dll" Source="..\IFilterFileReader\bin\Release\IFilterFileReader.dll" />
+                <File Id="IFILTERFILEREADER.PDB" Name="IFilterFileReader.pdb" Source="..\IFilterFileReader\bin\Release\IFilterFileReader.pdb" />
+                <File Id="IFILTERFILEREADER.TLB" Name="IFilterFileReader.tlb" Source="..\IFilterFileReader\bin\Release\IFilterFileReader.tlb" />
+                <RemoveFile Id="PurgeAppFolder" Name="*.*" On="uninstall" />
+            </Component>
+        </Directory>
+        <Feature Id="ProductFeature" Title="GDSSolidworksPluginSetup" Level="1">
+            <!-- TODO: Remove the comments around this ComponentRef element and the Component above in order to add resources to this installer. -->
+            <ComponentRef Id="GDSSolidWorks" />
+            <!-- Note: The following ComponentGroupRef is required to pull in generated authoring from project references. -->
+            <ComponentGroupRef Id="Product.Generated" />
+        </Feature>
+        <UI />
+        <!-- Sets the TARGETDIR property to a path based on ProductName property-->
+
+        <InstallUISequence>
+          <!-- Set TARGETDIR if it wasn't set on the command line -->
+          <Custom Action="SetTARGETDIR" Before="CostFinalize">TARGETDIR=""</Custom>
+        </InstallUISequence>
+
+        <InstallExecuteSequence>
+          <Custom Action="SetTARGETDIR" Before="CostFinalize">TARGETDIR=""</Custom>
+          <Custom Action="RegisterPlugin" After="InstallFinalize">NOT Installed</Custom>
+          <Custom Action="UnregisterPlugin" Before="RemoveFiles">(NOT UPGRADINGPRODUCTCODE) AND (REMOVE="ALL")</Custom>
+        </InstallExecuteSequence>
+      
+        <CustomAction Id="RegisterPlugin"
+                        Directory="TARGETDIR"
+                        ExeCommand='regsvr32.exe /s "[TARGETDIR]GoogleDesktopSolidworksPlugin.dll"'
+                        Return="asyncWait">
+        </CustomAction>
+        <CustomAction Id="SetTARGETDIR" Property="TARGETDIR"
+                        Value="[ProgramFilesFolder][Manufacturer]\[ProductName]"
+                        Execute="firstSequence">
+        </CustomAction>
+        <CustomAction Id="UnregisterPlugin"
+                        Directory="TARGETDIR"
+                        ExeCommand='regsvr32.exe /s /u "[TARGETDIR]GoogleDesktopSolidworksPlugin.dll"'
+                        Return="check">
+        </CustomAction>
+    </Product>
+</Wix>
