@@ -1,3 +1,5 @@
+The repo is no longer maintained.
+
 # Notes:
 I did not write this plugin.  I paid a programing expert to help me with this.  If you are programming expert, please take a look at compiling the project and using it.  You could help patch any bugs you come across.
 
